@@ -37,8 +37,9 @@
           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Pick a Room <span class="caret"></span>
           </button>
-          <ul class="dropdown-menu">
-<!--             <li><a href="#">Action</a></li> -->
+          <ul class="dropdown-menu" id="roomSelect">
+            <li><a href="#" class="newRoom">New room...</a></li>
+            <li role="separator" class="divider"></li>
           </ul>
         </div>
       </span>
@@ -56,11 +57,11 @@
             <th>Message</th>
           </tr>
         </thead>
-        <tbody class = "newPosts">
+        <tbody id="chats">
         </tbody>
       </table>
 
     </div>
-    <div id="chats"></div>
+<!--     <div id="chats"></div> -->
   </body>
 </html>

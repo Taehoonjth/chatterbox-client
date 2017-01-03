@@ -1,30 +1,55 @@
 // YOUR CODE HERE:
 
-$(document).ready(function() {
-  
-  window.app = {};
 
-  app.init = function () {
+window.app = {};
+window.app.init = function () {
+  
+  window.rooms = {};
+
+  app.renderRoom = function (room) {
+    //console.log(room);
+    $('#roomSelect').append('<li><a href="#">' + DOMPurify.sanitize(room) + '</a></li>'); 
+  };
+
+  app.renderMessage = function (data) {
+    if (typeof DOMPurify === 'undefined') {
+      window.DOMPurify = {
+        sanitize: function (value) {
+          return value;
+        }
+      };
+    }
+    var user = DOMPurify.sanitize(data.username);
+    var text = DOMPurify.sanitize(data.text);
+    
+    $('#chats').append('<tr><td><span class= "userName btn btn-link limitTextSize">' + user + '</span></td><td>' + text + '</td></tr>');
+    
+
+  };
+
+  app.fetch = function (fetch) {
     $.ajax({
       url: 'https://api.parse.com/1/classes/messages',
       type: 'GET',
       data: {order: '-createdAt'},
       
       success: function (data) {
-        console.log(data);
         for (var i = 0; i < data.results.length; i ++) {
-          var text = data.results[i].text;
-          var user = data.results[i].username;
-          if (!text || text.length < 1) {
+          if (!data.results[i].text || data.results[i].text.length < 1) {
             continue;
           }
-          $('.newPosts').append('<tr><td>' + DOMPurify.sanitize(user) + '</td><td>' + DOMPurify.sanitize(text) + '</td></tr>');
-          if (rooms[data.results[i].roomname] === undefined) {
-            rooms[data.results[i].roomname] = data.results[i].roomname;
+
+          app.renderMessage(data.results[i]);
+
+          var room = data.results[i].roomname;
+
+          if (!rooms[room]) {
+            rooms[room] = room;
           }
+
         }
-        for ( var key in rooms) {
-          $('.dropdown-menu').append('<li><a href="#">' + DOMPurify.sanitize(key) + '</a></li>'); 
+        for (var key in rooms) {
+          app.renderRoom(key); 
         }
       },
       error: function (data) {
@@ -33,17 +58,11 @@ $(document).ready(function() {
       }
     });
   };
-  //app.init();
-  window.rooms = {};
-
+  
   $('input:text').focus(
     function() {
       $(this).val('');
     });
-
-  $('#example-text-input').submit(function( event ) {
-    // console.log('something');
-  });
 
   $('#target').submit(function( event ) {
     // console.log( $('.userInput').val() );
@@ -51,7 +70,7 @@ $(document).ready(function() {
     var userMessage = {
       username: window.location.search.replace('?username=', '').replace(/%20/g, ' '),
       text: $('.userInput').val(),
-      roomname: 'lobby'
+      roomname: $('.dropdown-toggle').text()
     };
     app.send(userMessage);
     //window.app.init();
@@ -77,5 +96,44 @@ $(document).ready(function() {
       }
     });
   };
-  window.app.init();
+  //window.app.init();
+
+  $('button').on('click', function() {   
+    $('a').on('click', function() {
+      $('button').text($(this).text()).append('<span class="caret"></span>');
+    });
+  });
+  app.clearMessages = function() {
+    $('#chats').empty();
+  };
+
+  app.something = function () {
+    $.ajax({
+      url: undefined,
+      type: 'GET',
+      
+      success: function (data) {
+        console.log('it works!');
+      }
+    });
+  };
+  //app.handleUsernameClick = function() {
+    
+  //};
+
+  $('body').on('click', '.userName', function (event) {
+    console.log('user clicked!');
+    return true;
+  });
+  app.fetch();
+  $('body').on('click', '.newRoom', function (event) {
+    var newRoomName = prompt('Type your new room name.');
+    app.renderRoom(newRoomName);
+  });
+
+};
+
+$(document).ready(function() {
+  console.log('triggered app init');
+  app.init();
 });
