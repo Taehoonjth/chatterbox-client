@@ -3,10 +3,13 @@
   <head>
     <meta charset="utf-8">
     <title>chatterbox</title>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+    
     <link rel="stylesheet" href="styles/styles.css">
 
     <!-- dependencies -->
     <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/bootstrap-dropdown/index.js"></script>
     <script>
       // YOU DO NOT NEED TO EDIT THIS CODE
       if (!/(&|\?)username=/.test(window.location.search)) {
@@ -26,6 +29,36 @@
     <div id="main">
       <h1>chatterbox</h1>
       <!-- Your HTML goes here! -->
+      <span>Room: </span>
+      <span>
+        <!-- Single button -->
+        <div class="btn-group">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Pick a Room <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu">
+<!--             <li><a href="#">Action</a></li> -->
+          </ul>
+        </div>
+      </span>
+      <p></p>
+
+      <form id="target" action="#">
+        <input class="userInput" type="text" value="Hello there">
+        <input type="submit" value="Go">
+      </form>
+
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>User Name</th>
+            <th>Message</th>
+          </tr>
+        </thead>
+        <tbody class = "newPosts">
+        </tbody>
+      </table>
+
     </div>
     <div id="chats"></div>
   </body>
