@@ -3,25 +3,38 @@
 $(document).ready(function() {
   
   window.app = {};
+
   app.init = function () {
-    $.get('https://api.parse.com/1/classes/messages?where={"createdAt":{"$gte":{"__type":"Date","iso":"2016-12-31T18:02:52.249Z"}}}', function (data) {
-      console.log(data);
-      for (var i = 0; i < data.results.length; i ++) {
-        var text = data.results[i].text;
-        var user = data.results[i].username;
-        $('.newPosts').append('<tr><td>' + user + '</td><td>' + text + '</td></tr>');
-        if (rooms[data.results[i].roomname] === undefined) {
-          rooms[data.results[i].roomname] = data.results[i].roomname;
+    $.ajax({
+      url: 'https://api.parse.com/1/classes/messages',
+      type: 'GET',
+      data: {order: '-createdAt'},
+      
+      success: function (data) {
+        console.log(data);
+        for (var i = 0; i < data.results.length; i ++) {
+          var text = data.results[i].text;
+          var user = data.results[i].username;
+          if (!text || text.length < 1) {
+            continue;
+          }
+          $('.newPosts').append('<tr><td>' + DOMPurify.sanitize(user) + '</td><td>' + DOMPurify.sanitize(text) + '</td></tr>');
+          if (rooms[data.results[i].roomname] === undefined) {
+            rooms[data.results[i].roomname] = data.results[i].roomname;
+          }
         }
-      }
-      for ( var key in rooms) {
-        $('.dropdown-menu').append('<li><a href="#">' + key + '</a></li>'); 
+        for ( var key in rooms) {
+          $('.dropdown-menu').append('<li><a href="#">' + DOMPurify.sanitize(key) + '</a></li>'); 
+        }
+      },
+      error: function (data) {
+        // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
+        //console.error('chatterbox: Failed to send message', data);
       }
     });
   };
+  //app.init();
   window.rooms = {};
-
-
 
   $('input:text').focus(
     function() {
@@ -29,19 +42,22 @@ $(document).ready(function() {
     });
 
   $('#example-text-input').submit(function( event ) {
-    console.log('something');
+    // console.log('something');
   });
 
   $('#target').submit(function( event ) {
-    console.log( $('.userInput').val() );
+    // console.log( $('.userInput').val() );
     event.preventDefault();
     var userMessage = {
-      username: 'shawndrost',
+      username: window.location.search.replace('?username=', '').replace(/%20/g, ' '),
       text: $('.userInput').val(),
       roomname: 'lobby'
     };
     app.send(userMessage);
+    //window.app.init();
   });
+
+  //$('#target').on('click', function() { window.app.init(); });
 
   app.send = function(message) {
     $.ajax({
@@ -53,7 +69,7 @@ $(document).ready(function() {
       success: function (data) {
         console.log('chatterbox: Message sent');
         console.log(data);
-        app.init();
+        //window.app.init();
       },
       error: function (data) {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -61,4 +77,5 @@ $(document).ready(function() {
       }
     });
   };
+  window.app.init();
 });
