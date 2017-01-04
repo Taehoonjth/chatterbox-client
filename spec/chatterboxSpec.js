@@ -96,6 +96,8 @@ describe('chatterbox', function() {
 
     describe('events', function() {
       it('should add a friend upon clicking their username', function() {
+        app.init();
+        
         sinon.spy(app, 'handleUsernameClick');
 
         app.renderMessage({
@@ -104,24 +106,21 @@ describe('chatterbox', function() {
           roomname: 'lobby'
         });
 
-        app.init();
-
         $('#main').find('.username').trigger('click');
         expect(app.handleUsernameClick.called).to.be.true;
-
         app.handleUsernameClick.restore();
       });
 
       it('should try to send a message upon clicking submit', function() {
+        app.init();
         sinon.spy(app, 'handleSubmit');
 
         $('#message').val('Why so many Mel Brooks quotes?');
 
-        app.init();
 
+        console.log('test');
         $('#send .submit').trigger('submit');
-        expect(app.handleSubmit.calledOnce).to.be.true;
-
+        expect(app.handleSubmit.called).to.be.true;
         app.handleSubmit.restore();
       });
     });
